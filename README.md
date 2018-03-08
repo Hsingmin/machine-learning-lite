@@ -2,9 +2,11 @@
 A quick and light check list for machine learning learning.
 
 2018年春节假期，对2017年9月以来学习的Machine Learning知识点进行简要的总结，随手记录下来；
-机器学习部分主要集中在第7章，参考学习资料包含周志华《机器学习》、李航《统计学习方法》、《PRML》、《Deep Learning》、Tensorflow Docs、Python Docs以一些技术博客；
-其他章节来源于仓库 https://github.com/taizilongxu/interview_python#1-python，对Python部分进行了整理和充实；
-C/C++、Algorithm、OS、网络和数据库章节尚待完成；
+机器学习部分主要集中在第7章，参考学习资料包含周志华《机器学习》，李航《统计学习方法》，《PRML》，《Deep Learning》，Tensorflow Docs，
+Python Docs以一些技术博客；
+其他章节来源于仓库 https://github.com/taizilongxu/interview_python#1-python
+对Python部分进行了整理和充实；
+C/C++，Algorithm，OS，网络和数据库章节尚待完成；
 本书初稿使用MS-word2010编写，公式使用内嵌工具编辑；
 Python部分代码均调试通过：
   OS：Windows7
