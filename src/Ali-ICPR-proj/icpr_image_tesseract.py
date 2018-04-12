@@ -22,6 +22,8 @@ from PIL import Image
 # Train slices store path
 TRAIN_SLICES_DIR = 'd:/engineering-data/Ali-ICPR-data/train_slice'
 
+TRAIN_BINARY_DIR = 'd:/engineering-data/Ali-ICPR-data/train_binary'
+
 DEMOS_SLICES_DIR = './demos/to'
 
 DEMOS_RESULT_DIR = './demos/to/demos_logits.txt'
@@ -57,9 +59,9 @@ def produce_binary_image(path):
 
 def image_tesseract():
 	
-	images, labels = produce_binary_image("./demos/black")
+	images, labels = produce_binary_image(TRAIN_BINARY_DIR)
 
-	with codecs.open(DEMOS_RESULT_DIR, 'w', 'utf-8') as file:
+	with codecs.open(TESSERACT_RESULT_DIR, 'w', 'utf-8') as file:
 
 		for i in range(len(images)):
 			'''
@@ -69,9 +71,13 @@ def image_tesseract():
 			lang='chi_sim'))
 			print('==============================')
 			'''
-			logit = tools[0].image_to_string(Image.open(images[i]), lang='chi_sim')
-			line = labels[i] + ':' + logit + '\r\n'
-			file.write(line)
+			try:
+				logit = tools[0].image_to_string(Image.open(images[i]), lang='chi_sim')
+				line = labels[i] + ':' + logit + '\r\n'
+				file.write(line)
+			except Exception as e:
+				print(e)
+				pass
 
 if __name__ == '__main__':
 	image_tesseract()

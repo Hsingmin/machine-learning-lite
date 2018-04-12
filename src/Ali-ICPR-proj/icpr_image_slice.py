@@ -85,10 +85,8 @@ def get_single_image_bboxes(bbox_dir):
 	
 	return bboxes, labels
 
-def is_bbox_invalid(sess, image, bbox):
-	sized_image = np.asarray(image.eval(session=sess), dtype='uint8')
-	height = len(sized_image)
-	width = len(sized_image[0])
+def is_bbox_invalid(sess, width, height, bbox):
+	
 	# print("current image width = %d, height = %d" %(width,height))
 	if bbox[2]-bbox[0] < 5 or bbox[3]-bbox[1] < 5:
 		return True
@@ -110,6 +108,18 @@ def is_label_invalid(label):
 			return True
 	return False
 
+def get_soft_margin(begin, size, width, height):
+	if begin[0]-10 > 0:
+		begin[0] = begin[0]-10
+	if begin[1]-10 > 0:
+		begin[1] = begin[1]-10
+	if size[0]+10 < width:
+		size[0] = size[0]+10
+	if size[1]+10 < height:
+		size[1] = size[1]+10
+	return begin, size
+	
+
 # Get single image slice
 # arguments:
 #	image: a single decoded image data 
@@ -119,22 +129,28 @@ def is_label_invalid(label):
 #	None
 def get_single_image_slice(sess, image, bboxes, labels):
 	for i in range(len(bboxes)):
-		bbox = bboxes[i]
-		label = (labels[i]).replace('/', '').strip()
-		# illegal character handler
-		if is_label_invalid(label) or is_bbox_invalid(sess, image, bbox):
-			continue
+		try:
+			bbox = bboxes[i]
+			label = (labels[i]).replace('/', '').strip()
+			# illegal character handler
+			sized_image = np.asarray(image.eval(session=sess), dtype='uint8')
+			height = len(sized_image)
+			width = len(sized_image[0])
+			if is_label_invalid(label) or is_bbox_invalid(sess, width, height, bbox):
+				continue
 		
-		path = TRAIN_SLICES_DIR + label + ".png"
-		begin = [bbox[0], bbox[1], 0]
-		size = [bbox[2]-bbox[0], bbox[3]-bbox[1], -1]
-		sliced_image = tf.slice(image, begin, size)
-		#reshaped_image = tf.image.resize_images(sliced_image, [300, 300], method=0)
-		reshaped_image = sliced_image
-		uint8_image = tf.image.convert_image_dtype(reshaped_image, dtype=tf.uint8)
-		encoded_image = tf.image.encode_png(uint8_image)
-		with tf.gfile.GFile(path, "wb") as f:
-			f.write(encoded_image.eval())
+			path = TRAIN_SLICES_DIR + label + ".png"
+			begin, size = get_soft_margin([bbox[0], bbox[1], 0], [bbox[2]-bbox[0], bbox[3]-bbox[1], -1], width, height)
+			sliced_image = tf.slice(image, begin, size)
+			#reshaped_image = tf.image.resize_images(sliced_image, [300, 300], method=0)
+			reshaped_image = sliced_image
+			uint8_image = tf.image.convert_image_dtype(reshaped_image, dtype=tf.uint8)
+			encoded_image = tf.image.encode_png(uint8_image)
+			with tf.gfile.GFile(path, "wb") as f:
+				f.write(encoded_image.eval())
+		except Exception as e:
+			print(e)
+			pass
 
 def main(argv=None):
 	# Get images list and corresponding boxes list.

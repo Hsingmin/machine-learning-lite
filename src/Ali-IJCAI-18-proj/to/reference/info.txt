@@ -1,0 +1,74 @@
+0:instance_id	#样本编号 dtype=python3 int
+
+1:item_id		#商品编号 dtype=python3 int
+	2:item_category_list	#商品类目[c0;c1;c2] dtype=python3 str
+							#类目间有从属关系
+	3:item_property_list	#商品属性列表[p0;p1;p2] dtype=python3 str
+							#属性间无从属关系
+	4:item_brand_id			#商品品牌编号 dtype=python3 int
+	5:item_city_id			#商品所在城市编号 dtype=python3 int
+	6:item_price_level		#商品价格等级 dtype=python3 int
+							#数值越大价格越高
+	7:item_sales_level		#商品销量等级 dtype=python3 int
+							#数值越大销量越大
+	8:item_collected_level	#商品收藏次数 dtype=python3 int
+							#数值越大收藏越多
+	9:item_pv_level			#商品广告展示次数 dtype=python3 int
+							#数值越大展示越多
+							
+10:user_id		#用户编号 dtype=python3 int
+	11:user_gender_id		#用户性别 dtype=python3 int 0/1/2
+							#-1-未知，0-女，1-男，2-家庭
+	12:user_age_level		#用户预测年龄等级 dtype=python3 int
+							#数值越大年龄越大
+	13:user_occupation_id	#用户预测职业编号 dtype=python3 int
+	14:user_star_level		#用户星级编号 dtype=python3 int
+							#数值越大星级越高
+							
+15:context_id	#上下文信息 dtype=python3 int
+	16:context_timestamp			#广告展示时间 dtype=python3 int
+									#Unix时间戳
+	17:context_page_id				#商品展示所在页面编号 dtype=python3 int
+									#单词搜索在第几页展示
+	18:predict_category_property	#根据检索词预测商品的类目属性 
+									#dtype=python3 str
+									#category_A:property_A_1,property_A_2,property_A_3;
+									#category_B:-1;category_C:property_C_1,property_C_2
+
+19:shop_id	#店铺编号 dtype=python3 int
+	20:shop_review_num_level		#店铺评价次数 dtype=python3 int
+									#数值越大评价越多 
+	21:shop_review_positive_rate	#店铺好评率 dtype=python3 float
+									#数值越大好评率越高
+	22:shop_star_level				#店铺星级编号 dtype=python3 int
+									#数值越大星级越高
+	23:shop_score_service			#店铺服务态度评分 dtype=python3 float
+									#数值越大评分越高
+	24:shop_score_delivery			#店铺物流评分 dtype=python3 float
+									#数值越大评分越高
+	25:shop_score_description		#店铺描述相符评分 dtype=python3 float
+									#数值越大评分越高
+									
+26:is_trade		#是否成交 dtype=python3 int 0/1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
