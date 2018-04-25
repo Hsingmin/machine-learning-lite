@@ -1,0 +1,8 @@
+1. ocr.model 定义CNN+GRU+CTC网络结构、前向传播过程；
+	计算CTC Loss；
+	
+2. train.train_batch训练模型，feed数据；
+
+3. data.reshape_image调整图像高度，统一，组织输入model；
+
+4. icpr_main运行模型；
