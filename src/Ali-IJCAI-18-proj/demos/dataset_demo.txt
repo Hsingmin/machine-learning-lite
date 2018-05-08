@@ -1,0 +1,6 @@
+name price sales
+huawei 3999 20000
+mi 2689 12000
+vivo 2399 38600
+oppo 2269 29000
+apple 5799 126790

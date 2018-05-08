@@ -58,13 +58,13 @@ def split_dataset():
 	# Get is_trade distribution 
 	pd.read_csv(dataset_raw, sep=' ', usecols=[26]).to_csv(
 			os.path.join(DATASET_DIR, "train_trade.csv"))
-	
+
 	# Get item distribution
 	cols = [x for x in range(1, 10)]
 	cols.append(26)
 	pd.read_csv(dataset_raw, sep=' ', usecols=cols).to_csv(
 			os.path.join(DATASET_DIR, "train_item.csv"))
-	
+
 	# Get user distribution
 	cols = [x for x in range(10, 15)]
 	cols.append(26)
@@ -76,7 +76,7 @@ def split_dataset():
 	cols.append(26)
 	pd.read_csv(dataset_raw, sep=' ', usecols=cols).to_csv(
 			os.path.join(DATASET_DIR, "train_context.csv"))
-	
+
 	# Get shop distribution
 	cols = [x for x in range(19, 27)]
 	pd.read_csv(dataset_raw, sep=' ', usecols=cols).to_csv(
@@ -89,7 +89,7 @@ def split_dataset():
 #	saved as is_trade distribution.png 
 def visualize_trade_distribution():
 	df = pd.read_csv(os.path.join(DATASET_DIR, "train_trade.csv"))
-	
+
 	df.loc['trade_sums'] = df.apply(lambda x: x.sum())
 	drade_count = df.loc['trade_sums']['is_trade']
 	slices = [trade_count, len(df)-trade_count]
@@ -111,20 +111,20 @@ def visualize_trade_distribution():
 def visualize_item_distribution():
 	df = pd.read_csv(os.path.join(DATASET_DIR, "train_item.csv"))
 	item_dict = {}
-	
+
 	for item in df['item_id']:
 		if item in item_dict:
 			item_dict[item] += 1
 		else:
 			item_dict.update({item: 1})
-	
+
 	item_count_dict = {}
 	for item in item_dict:
 		if item_dict[item] in item_count_dict:
 			item_count_dict[item_dict[item]] += 1
 		else:
 			item_count_dict.update({item_dict[item]: 1})
-	
+
 	plt.bar([c for c in range(1, 51)], [item_count_dict[c] for c in range(1, 51)],
 			label="Item Count", color='g')
 	plt.xlabel('item occur times')
@@ -132,7 +132,7 @@ def visualize_item_distribution():
 	plt.title('Item Distribution')
 	plt.legend()
 	plt.show()
-	
+
 	item_list = []
 	item_times_list = []
 	st = sorted(item_dict.items(), key=lambda e: e[1], reverse=True)
@@ -143,7 +143,7 @@ def visualize_item_distribution():
 	with codecs.open('./item_axis.txt', 'w', 'utf-8') as outfile:
 		for i in range(len(item_list)):
 			outfile.write(str(i) + ':' + str(int(item_list[i])) + '\r\n')
-	plt.bar([id for id in range(len(item_list))], item_times_list, 
+	plt.bar([id for id in range(len(item_list))], item_times_list,
 			label="Item Count", color='g')
 	plt.xlabel('item id')
 	plt.ylabel('occur times')
@@ -160,20 +160,20 @@ def visualize_item_distribution():
 def visualize_shop_distribution():
 	df = pd.read_csv(os.path.join(DATASET_DIR, "train_shop.csv"))
 	shop_dict = {}
-	
+
 	for shop in df['shop_id']:
 		if shop in shop_dict:
 			shop_dict[shop] += 1
 		else:
 			shop_dict.update({shop: 1})
-	
+
 	shop_count_dict = {}
 	for shop in shop_dict:
 		if shop_dict[shop] in shop_count_dict:
 			shop_count_dict[shop_dict[shop]] += 1
 		else:
 			shop_count_dict.update({shop_dict[shop]: 1})
-	
+
 	plt.bar([c for c in range(1, 51)], [shop_count_dict[c] for c in range(1, 51)],
 			label="Shop Count", color='g')
 	plt.xlabel('shop occur times')
@@ -181,7 +181,7 @@ def visualize_shop_distribution():
 	plt.title('Shop Distribution')
 	plt.legend()
 	plt.show()
-	
+
 	shop_list = []
 	shop_times_list = []
 	st = sorted(shop_dict.items(), key=lambda e: e[1], reverse=True)
@@ -192,7 +192,7 @@ def visualize_shop_distribution():
 	with codecs.open('./shop_axis.txt', 'w', 'utf-8') as outfile:
 		for i in range(len(shop_list)):
 			outfile.write(str(i) + ':' + str(shop_list[i]) + '\r\n')
-	plt.bar([id for id in range(len(shop_list))], shop_times_list, 
+	plt.bar([id for id in range(len(shop_list))], shop_times_list,
 			label="Shop Count", color='g')
 	plt.xlabel('shop id')
 	plt.ylabel('occur times')
@@ -211,7 +211,7 @@ def visualize_shop_distribution():
 #		 user_occupation_id distribution.png
 def visualize_user_distribution():
 	df = pd.read_csv(os.path.join(DATASET_DIR, "train_user.csv"))
-	
+
 	# Get user gender distribution .
 	unknown_count = 0
 	female_count = 0
@@ -256,7 +256,7 @@ def visualize_user_distribution():
 		autopct='%1.1f%%')
 	plt.title('User star level distribution')
 	plt.show()
-	
+
 	# Get user age level distribution .
 	user_age_dict = {}
 	for age in df['user_age_level']:
@@ -273,14 +273,14 @@ def visualize_user_distribution():
 		else:
 			age_list.append(age_level[0])
 		count_list.append(age_level[1])
-	plt.bar(age_list, count_list, 
+	plt.bar(age_list, count_list,
 			label="age level count", color='g')
 	plt.xlabel('age level')
 	plt.ylabel('counts')
 	plt.title('User Age Distribution')
 	plt.legend()
 	plt.show()
-	
+
 	# Get user age level distribution .
 	user_occupation_dict = {}
 	for occupation in df['user_occupation_id']:
@@ -297,7 +297,7 @@ def visualize_user_distribution():
 		else:
 			occupation_list.append(occupation[0])
 		count_list.append(occupation[1])
-	plt.bar(occupation_list, count_list, 
+	plt.bar(occupation_list, count_list,
 			label="occupation count", color='g')
 	plt.xlabel('occupation id')
 	plt.ylabel('counts')
@@ -319,7 +319,7 @@ def visualize_user_distribution():
 #		 shop_score_description distribution.png.
 def visualize_shop_score_distribution():
 	df = pd.read_csv(os.path.join(DATASET_DIR, "train_shop.csv"))
-	
+
 	# Get shop star level distribution .
 	shop_star_dict = {}
 	for star in df['shop_star_level']:
@@ -333,7 +333,7 @@ def visualize_shop_score_distribution():
 	for shop in shop_star_dict:
 		star_list.append(shop[0])
 		count_list.append(shop[1])
-	plt.bar(star_list, count_list, 
+	plt.bar(star_list, count_list,
 			label="shop star level count", color='g')
 	plt.xlabel('shop star level')
 	plt.ylabel('counts')
@@ -354,14 +354,14 @@ def visualize_shop_score_distribution():
 	for shop in shop_review_num_dict:
 		review_list.append(shop[0])
 		count_list.append(shop[1])
-	plt.bar(review_list, count_list, 
+	plt.bar(review_list, count_list,
 			label="shop review num level count", color='g')
 	plt.xlabel('shop review num level')
 	plt.ylabel('counts')
 	plt.title('Shop Review Num Level Distribution')
 	plt.legend()
 	plt.show()
-	
+
 	# Get shop review positive rate distribution .
 	shop_review_rate_dict = {75: 0, 80: 0, 85: 0, 90: 0, 95: 0, 100: 0}
 	outliers = []
@@ -383,14 +383,14 @@ def visualize_shop_score_distribution():
 	count_list = [shop_review_rate_dict[key] for key in interval_list]
 	#print(outliers)
 	print(shop_review_rate_dict)
-	plt.bar(interval_list, count_list, 
+	plt.bar(interval_list, count_list,
 			label="shop review positive rate count", color='g')
 	plt.xlabel('shop review positive rate')
 	plt.ylabel('counts')
 	plt.title('Shop Review Positive Rate Distribution')
 	plt.legend()
 	plt.show()
-	
+
 	# Get shop score service distribution .
 	shop_score_service_dict = {-2: 0, 0: 0, 2: 0, 4: 0, 6: 0, 8: 0, 10: 0}
 	outliers = []
@@ -413,14 +413,14 @@ def visualize_shop_score_distribution():
 	interval_list = [-2, 0, 2, 4, 6, 8, 10]
 	count_list = [shop_score_service_dict[key] for key in interval_list]
 	print(shop_score_service_dict)
-	plt.bar(interval_list, count_list, 
+	plt.bar(interval_list, count_list,
 			label="shop score service count", color='g')
 	plt.xlabel('shop score service')
 	plt.ylabel('counts')
 	plt.title('Shop Score Service Distribution')
 	plt.legend()
 	plt.show()
-	
+
 	# Get shop score delivery distribution .
 	shop_score_delivery_dict = {-2: 0, 0: 0, 2: 0, 4: 0, 6: 0, 8: 0, 10: 0}
 	outliers = []
@@ -443,14 +443,14 @@ def visualize_shop_score_distribution():
 	interval_list = [-2, 0, 2, 4, 6, 8, 10]
 	count_list = [shop_score_delivery_dict[key] for key in interval_list]
 	print(shop_score_delivery_dict)
-	plt.bar(interval_list, count_list, 
+	plt.bar(interval_list, count_list,
 			label="shop score delivery count", color='g')
 	plt.xlabel('shop score delivery')
 	plt.ylabel('counts')
 	plt.title('Shop Score Delivery Distribution')
 	plt.legend()
 	plt.show()
-	
+
 	# Get shop score description distribution .
 	shop_score_description_dict = {-2: 0, 0: 0, 2: 0, 4: 0, 6: 0, 8: 0, 10: 0}
 	outliers = []
@@ -473,13 +473,13 @@ def visualize_shop_score_distribution():
 	interval_list = [-2, 0, 2, 4, 6, 8, 10]
 	count_list = [shop_score_description_dict[key] for key in interval_list]
 	print(shop_score_description_dict)
-	plt.bar(interval_list, count_list, 
+	plt.bar(interval_list, count_list,
 			label="shop score description count", color='g')
 	plt.xlabel('shop score description')
 	plt.ylabel('counts')
 	plt.title('Shop Score Description Distribution')
 	plt.legend()
-	plt.show()	
+	plt.show()
 
 # Get item field data distribution with pie for item_brand_id, item_city_id 
 # and item_collected_level, histogram for item_sales_level.
@@ -493,7 +493,7 @@ def visualize_shop_score_distribution():
 
 def get_item_field_pie(field):
 	df = pd.read_csv(os.path.join(DATASET_DIR, "train_item.csv"))
-	
+
 	# Get item brand distribution .
 	item_field_dict = {}
 	for f in df[field]:
@@ -524,7 +524,7 @@ def get_item_field_pie(field):
 
 def get_item_field_histogram(field):
 	df = pd.read_csv(os.path.join(DATASET_DIR, "train_item.csv"))
-	
+
 	# Get item brand distribution .
 	item_field_dict = {}
 	for f in df[field]:
@@ -540,11 +540,11 @@ def get_item_field_histogram(field):
 	for f in item_field_dict:
 		item_field_list.append(f[0])
 		item_field_times.append(f[1])
-	
+
 	#interval_list = [-2, 0, 2, 4, 6, 8, 10]
 	#count_list = [shop_score_description_dict[key] for key in interval_list]
 	field = field.replace('_', ' ')
-	plt.bar(item_field_list, item_field_times, 
+	plt.bar(item_field_list, item_field_times,
 			label="%s count" %field, color='g')
 	plt.xlabel(field)
 	plt.ylabel('counts')
@@ -570,18 +570,18 @@ def raw_convert_csv(dataset):
 
 # Execute every function one by one to visualize the column data distribution.
 if __name__ == '__main__':
-	# visualize_item_distribution()	
-	# visualize_user_distribution()
-	# visualize_shop_distribution()
-	# visualize_shop_score_distribution()
-	# visualize_item_detail_distribution()
-	
-	# get_item_field_pie('item_city_id')
-	# get_item_field_pie('item_brand_id')
-	# get_item_field_histogram('item_price_level')
-	# get_item_field_histogram('item_sales_level')
-	# get_item_field_histogram('item_pv_level')
-	# get_item_field_histogram('item_collected_level')
+	visualize_item_distribution()
+	visualize_user_distribution()
+	visualize_shop_distribution()
+	visualize_shop_score_distribution()
+	visualize_item_detail_distribution()
+
+	get_item_field_pie('item_city_id')
+	get_item_field_pie('item_brand_id')
+	get_item_field_histogram('item_price_level')
+	get_item_field_histogram('item_sales_level')
+	get_item_field_histogram('item_pv_level')
+	get_item_field_histogram('item_collected_level')
 
 
 
