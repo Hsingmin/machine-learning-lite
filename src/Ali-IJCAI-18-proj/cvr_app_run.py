@@ -26,15 +26,18 @@ TRAIN_DATASET_RAW = 'round1_ijcai_18_train_20180301.txt'
 
 TEST_DATASET_RAW = 'round1_ijcai_18_test_a_20180301.txt'
 
-# TRAIN_DATASET_CSV = 'ijcai_18_train_dataset.csv'
-# TEST_DATASET_CSV = 'ijcai_18_test_dataset.csv'
-
-def dataset_prepare(dataset):
+# Feature encode and combine on raw dataset.
+# params:
+#       dataset -- TRAIN_DATASET_RAW or TEST_DATASET_RAW
+# returns:
+#       dataset -- dataframe with encoded and combined features
+#
+def feature_encode_combine(dataset):
     dataset = dataset.drop_duplicates(subset='instance_id')
     dataset = dt.feature_process(dataset)
     dataset = dt.time_hour_encode(dataset)
     dataset = dt.split_shop_feature(dataset)
-    dataset = dt.slide_count(dataset)
+    # dataset = dt.date_mask(dataset)
     dataset = dt.feature_dtype_convert(dataset)
     dataset = dt.item_feature_internal_combine(dataset)
     dataset = dt.user_feature_internal_combine(dataset)
@@ -44,27 +47,52 @@ def dataset_prepare(dataset):
 
     return dataset
 
-def clean_data_save():
-    train = pd.read_csv(os.path.join(DATASET_DIR, 'to/train.txt'), sep="\s+")
-    # Move train['is_trade'] to the last column
+# Undersample train dataset to make balance between positive and
+# negative samples.
+# params:
+#       train -- train dataset with features encoded and combined
+# returns:
+#       dataset -- dataframe with balanced samples
+#
+def train_undersampling(train):
     trade_series = train.pop('is_trade')
     train.insert(len(train.columns), 'is_trade', trade_series)
-    test = pd.read_csv(os.path.join(DATASET_DIR, 'to/test.txt'), sep="\s+")
-    data = pd.concat([train, test])
-    data.to_csv(os.path.join(DATASET_DIR, 'data.txt'), sep=" ", index=False)
-    print("Write dataset file success, try to train model.......")
 
-def lgbmc_run(dataset):
+    # Undersampling train dataset to make positive and negative samples balanced.
+    positive_samples = train[train['is_trade'] == 1]
+    negative_samples = train[train['is_trade'] == 0]
+    # Reset index of negative_samples for sampling operation.
+    negative_samples = negative_samples.reset_index(drop=True)
+    sampled_negative = pd.DataFrame()
+    pm = len(positive_samples)
+    nm = len(negative_samples)
+    for i in range(pm):
+        sampled_negative = sampled_negative.append(negative_samples.loc[np.random.randint(nm)])
+    dataset = pd.concat([positive_samples, sampled_negative])
+    # Shuffle dataset.
+    dataset = dataset.sample(frac=1)
 
-    train = dataset[(dataset['day'] >= 18) & (dataset['day'] <= 23)]
-    validate = dataset[dataset['day'] == 24]
+    return dataset
+
+# Run GBDT model on training dataset.
+# params:
+#       train -- dataset need furtherly splited into training and validation dataset
+#       test -- evaluate dataset
+# output:
+#       best_iter -- number of child trees of GBDT model with minimum log loss
+#       predicts.txt -- predicted result of test dataset
+#
+def lgbmc_run(train, test):
+
+    train = train.loc[0: int(len(train)*0.8)]
+    validate = train.loc[int(len(train)*0.8): len(train)]
     best_iter = gc.lgbmc(train=train, validate=validate, is_train=True, iteration=20000)
 
-    # Split dataset into train and test.
-    train = dataset[dataset.is_trade.notnull()]
-    test = dataset[dataset.is_trade.isnull()]
+    # Predict on test dataset
     predicts = gc.lgbmc(train=train, test=test, is_train=False, iteration=best_iter)
-    predicts.to_csv('./to/predicts.txt', sep=" ", index=False)
+    predicts.to_csv('./to/predict_result.txt', sep=" ", index=False)
+
+    return best_iter
 
 def ffm_run():
 
@@ -72,21 +100,26 @@ def ffm_run():
 
 if __name__ == '__main__':
 
-    data = pd.read_csv(os.path.join(DATASET_DIR, 'data.txt'), sep="\s+")
-    lgbmc_run(data)
+    if not os.path.exists(os.path.join(DATASET_DIR, 'trainable_data.txt')):
+        train = pd.read_csv(os.path.join(DATASET_DIR, TRAIN_DATASET_RAW), sep="\s+")
+        train = feature_encode_combine(train)
+        train = train_undersampling(train)
+        train.to_csv(os.path.join(DATASET_DIR, 'trainable_data.txt'), sep=" ", index=False)
+    else:
+        print("trainable_data already existed ......")
+        train = pd.read_csv(os.path.join(DATASET_DIR, 'trainable_data.txt'), sep="\s+")
+        # train.to_csv(os.path.join(DATASET_DIR, 'trainable_data.csv'))
 
-    """
-    predicts = pd.read_csv('./to/predicts.txt', sep="\s+")
-    predicts['predicted_trade'] = predicts['predicted_score'].apply(
-            lambda x: 1 if x >= 0.85 else (0 if x <= 0.15 else x))
-    print(predicts[predicts['predicted_trade'] == 0])
-    """
-    """
-    train = pd.read_csv(os.path.join(DATASET_DIR, 'to/train.txt'), sep="\s+")
-    test = pd.read_csv(os.path.join(DATASET_DIR, 'to/test.txt'), sep="\s+")
-    predicts = gc.lgbmc(train=train, test=test, is_train=False, iteration=429)
-    predicts.to_csv('./to/test_predicts.txt', sep=" ", index=False)
-    """
+    if not os.path.exists(os.path.join(DATASET_DIR, 'predictable_data.txt')):
+        test = pd.read_csv(os.path.join(DATASET_DIR, TEST_DATASET_RAW), sep="\s+")
+        test = feature_encode_combine(test)
+        test.to_csv(os.path.join(DATASET_DIR, 'predictable_data.txt'), sep=" ", index=False)
+    else:
+        print("predictable_data already existed ......")
+        test = pd.read_csv(os.path.join(DATASET_DIR, 'predictable_data.txt'), sep="\s+")
+        # test.to_csv(os.path.join(DATASET_DIR, 'predictable_data.csv'))
+
+    best_iter = lgbmc_run(train, test)
 
 
 

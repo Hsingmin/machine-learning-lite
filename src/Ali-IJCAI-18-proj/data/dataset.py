@@ -199,8 +199,8 @@ def split_shop_feature(data):
     del data['shop_service_segment']
     return data
 
-# Get user_id, item_id, shop_id counts in a slected week.
-def slide_count(data):
+# Field date masking and get user_id, item_id, shop_id counts in a slected week.
+def date_mask(data):
     for d in range(19, 26):
         df1 = data[data['day'] == d-1]
         df2 = data[data['day'] == d]
